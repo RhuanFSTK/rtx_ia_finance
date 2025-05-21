@@ -12,7 +12,9 @@ SEU_BANCO = os.getenv("SEU_BANCO")
 # Tentativa de carregar .env localmente (sem erro se não existir)
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    dotenv_path = ".env"
+    if os.path.exists(dotenv_path):
+        load_dotenv(dotenv_path, override=False)
 except:
     pass
 
