@@ -9,10 +9,10 @@ load_dotenv()
 def get_connection():
     try:
         # Lê as variáveis de ambiente
-        host = os.getenv("DB_HOST")
-        user = os.getenv("DB_USER")
-        password = os.getenv("DB_PASSWORD")
-        database = os.getenv("DB_NAME")
+        host = os.getenv("SEU_HOST")
+        user = os.getenv("SEU_USUARIO")
+        password = os.getenv("SUA_SENHA")
+        database = os.getenv("SEU_BANCO")
         
         if not all([host, user, password, database]):
             raise ValueError("Faltando variáveis de ambiente para conexão com o banco de dados.")
