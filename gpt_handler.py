@@ -9,16 +9,8 @@ SEU_USUARIO = os.getenv("SEU_USUARIO")
 SUA_SENHA = os.getenv("SUA_SENHA")
 SEU_BANCO = os.getenv("SEU_BANCO")
 
-# Tentativa de carregar .env localmente (sem erro se não existir)
-try:
-    from dotenv import load_dotenv
-    dotenv_path = ".env"
-    if os.path.exists(dotenv_path):
-        load_dotenv(dotenv_path, override=False)
-except:
-    pass
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = "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"
 
 if not OPENAI_API_KEY:
     print("⚠️ OPENAI_API_KEY não encontrada, algumas funções podem não funcionar.")
