@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI
-from endpoints import registro, transcricao, imagem
+from endpoints import registro, transcricao, imagem, consulta
 from fastapi.middleware.cors import CORSMiddleware
 
 # Criação do aplicativo FastAPI
@@ -26,6 +26,7 @@ app.add_middleware(
 app.include_router(registro.router, prefix="/registro")
 app.include_router(transcricao.router, prefix="/audio")
 app.include_router(imagem.router, prefix="/imagem")
+app.include_router(consulta.router, prefix="/consulta")
 
 # Rota raiz
 @app.get("/")
