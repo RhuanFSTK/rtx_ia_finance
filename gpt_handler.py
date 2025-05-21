@@ -1,50 +1,50 @@
 import os
 import openai
 import base64
+from dotenv import load_dotenv
 
-# Pega variáveis direto do ambiente (deploy e local)
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-SEU_HOST = os.getenv("SEU_HOST")
-SEU_USUARIO = os.getenv("SEU_USUARIO")
-SUA_SENHA = os.getenv("SUA_SENHA")
-SEU_BANCO = os.getenv("SEU_BANCO")
+# Carrega variáveis de ambiente
+load_dotenv()
 
-# Tentativa de carregar .env localmente (sem erro se não existir)
-try:
-    from dotenv import load_dotenv
-    dotenv_path = ".env"
-    if os.path.exists(dotenv_path):
-        load_dotenv(dotenv_path, override=False)
-except:
-    pass
-
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-openai.api_key = OPENAI_API_KEY
+# Chave da API
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def classificar_texto(texto):
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-0125",
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "Você é um analista financeiro."},
             {"role": "user", "content": f"Classifique: {texto}"}
         ]
     )
-    return response['choices'][0]['message']['content']
+    return response['choices'][0]['message']['content'].strip()
 
 def transcrever_audio(caminho):
     with open(caminho, "rb") as audio_file:
-        transcript = openai.Audio.transcribe("whisper-1", audio_file)
-    return transcript['text']
+        transcript = openai.Audio.transcriptions.create(
+            file=audio_file,
+            model="whisper-1"
+        )
+    return transcript['text'].strip()
 
 def analisar_imagem(base64_img):
     response = openai.ChatCompletion.create(
         model="gpt-4-vision-preview",
         messages=[
-            {"role": "user", "content": [
-                {"type": "text", "text": "Analise essa nota fiscal."},
-                {"type": "image_url", "image_url": {"url": base64_img}}
-            ]}
-        ]
+            {"role": "system", "content": "Você é um assistente que analisa notas fiscais."},
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "Analise essa nota fiscal."},
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_img}"
+                        }
+                    }
+                ]
+            }
+        ],
+        max_tokens=500
     )
-    return response['choices'][0]['message']['content']
+    return response['choices'][0]['message']['content'].strip()

@@ -1,8 +1,27 @@
-from fastapi import FastAPI, UploadFile, File
+import os
+from fastapi import FastAPI
 from endpoints import registro, transcricao, imagem
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Agente Financeiro com IA")
 
+# CORS com ambiente condicional
+origens = [
+    "https://rtxiafinancefront-production.up.railway.app"
+]
+
+if os.getenv("ENV") != "production":
+    origens.append("http://localhost:3000")  # Ambiente local para desenvolvimento
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origens,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Inclui os módulos
 app.include_router(registro.router, prefix="/registro")
 app.include_router(transcricao.router, prefix="/audio")
 app.include_router(imagem.router, prefix="/imagem")
