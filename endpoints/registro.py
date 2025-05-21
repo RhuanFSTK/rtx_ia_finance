@@ -6,15 +6,17 @@ import re
 router = APIRouter()
 
 def classificar_valor(texto: str) -> float:
-    # Procurar por padrões de valor como R$ 12,34 ou 12.34
-    match = re.search(r'(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2}))', texto)
+    # Expressão regular: captura valores com ou sem R$, com ou sem centavos
+    padrao = r'(?:R\$?\s*)?(\d+(?:[.,]\d{2})?)\s*(?:reais|rs)?'
+    match = re.search(padrao, texto, re.IGNORECASE)
+    
     if match:
-        valor_str = match.group(1).replace('.', '').replace(',', '.')
+        valor_str = match.group(1).replace(',', '.')
         try:
             return float(valor_str)
         except ValueError:
             pass
-    return 0.0  # valor padrão se nada for encontrado
+    return 0.0
 
 @router.post("/")
 def registrar_gasto(descricao: str = Form(...)):
