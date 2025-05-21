@@ -46,7 +46,7 @@ def classificar_texto(texto: str) -> dict:
                 {{
                 "descricao": "Almoço",
                 "valor": 50.0,
-                "classificacao": "Despesa pessoal"
+                "classificacao": "Despesa pessoal ou profissional"
                 }}
             """
 

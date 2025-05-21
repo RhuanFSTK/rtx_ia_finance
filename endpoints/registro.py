@@ -28,9 +28,9 @@ def registrar_gasto(descricao: str = Form(...)):
             conn.commit()
 
         return {
-            "descricao": desc,
-            "classificacao": classificacao,
-            "valor": valor
+            "mensagem": "Gasto classificado e salvo com sucesso!",
+            "gpt": resultado,  # Resultado bruto do GPT para exibir no front
+            "salvo": True
         }
 
     except Exception as e:
