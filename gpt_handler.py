@@ -7,9 +7,10 @@ from dotenv import load_dotenv
 os.environ["OPENAI_AGENTS_DISABLE_TRACING"] = "true"
 load_dotenv()
 
-openai.api_key = os.getenv("OPENAI_API_KEY") 
-if not openai.api_key:
-    raise ValueError("OPENAI_API_KEY não encontrada no arquivo .env")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    print("⚠️ OPENAI_API_KEY não encontrada, algumas funções podem não funcionar.")
+
 
 
 def classificar_texto(texto):
