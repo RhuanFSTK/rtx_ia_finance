@@ -3,15 +3,18 @@ import openai
 import base64
 from dotenv import load_dotenv
 
-# Desabilita trace
-os.environ["OPENAI_AGENTS_DISABLE_TRACING"] = "true"
-load_dotenv()
-
+# Pega variáveis direto do ambiente (deploy e local)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+SEU_HOST = os.getenv("SEU_HOST")
+SEU_USUARIO = os.getenv("SEU_USUARIO")
+SUA_SENHA = os.getenv("SUA_SENHA")
+SEU_BANCO = os.getenv("SEU_BANCO")
+
 if not OPENAI_API_KEY:
     print("⚠️ OPENAI_API_KEY não encontrada, algumas funções podem não funcionar.")
-
-
+else:
+    openai.api_key = OPENAI_API_KEY
+    print("🚀 OPENAI_API_KEY:", OPENAI_API_KEY)
 
 def classificar_texto(texto):
     response = openai.ChatCompletion.create(
