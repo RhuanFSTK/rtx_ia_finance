@@ -1,7 +1,6 @@
 import os
 import openai
 import base64
-from dotenv import load_dotenv
 
 # Pega variáveis direto do ambiente (deploy e local)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -10,11 +9,19 @@ SEU_USUARIO = os.getenv("SEU_USUARIO")
 SUA_SENHA = os.getenv("SUA_SENHA")
 SEU_BANCO = os.getenv("SEU_BANCO")
 
+# Tentativa de carregar .env localmente (sem erro se não existir)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except:
+    pass
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 if not OPENAI_API_KEY:
     print("⚠️ OPENAI_API_KEY não encontrada, algumas funções podem não funcionar.")
 else:
     openai.api_key = OPENAI_API_KEY
-    print("🚀 OPENAI_API_KEY:", OPENAI_API_KEY)
 
 def classificar_texto(texto):
     response = openai.ChatCompletion.create(
