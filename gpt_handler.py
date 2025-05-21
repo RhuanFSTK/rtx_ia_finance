@@ -20,10 +20,7 @@ except:
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-if not OPENAI_API_KEY:
-    print("⚠️ OPENAI_API_KEY não encontrada, algumas funções podem não funcionar.")
-else:
-    openai.api_key = OPENAI_API_KEY
+openai.api_key = OPENAI_API_KEY
 
 def classificar_texto(texto):
     response = openai.ChatCompletion.create(
