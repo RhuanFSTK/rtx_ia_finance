@@ -6,10 +6,18 @@ from PIL import Image
 
 router = APIRouter()
 
+MAX_FILE_SIZE_MB = 5
+
 @router.post("/")
 async def analisar(file: UploadFile = File(...)):
     try:
         file_content = await file.read()
+
+        # Verificação de tamanho
+        if len(file_content) > MAX_FILE_SIZE_MB * 1024 * 1024:
+            raise HTTPException(status_code=413, detail="Imagem muito grande. Envie uma imagem de até 5MB.")
+
+        # Verifica se é imagem válida
         image = Image.open(io.BytesIO(file_content))
         image.verify()
     except Exception:
