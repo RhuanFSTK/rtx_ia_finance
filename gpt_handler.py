@@ -80,11 +80,12 @@ def classificar_texto(texto: str) -> dict:
 
 def transcrever_audio(caminho):
     with open(caminho, "rb") as audio_file:
-        transcript = openai.Audio.transcriptions.create(
-            file=audio_file,
-            model="whisper-1"
+        transcript = openai.Audio.transcribe(
+            model="whisper-1",
+            file=audio_file
         )
-    return transcript['text'].strip()
+    return transcript["text"].strip()
+
 
 def analisar_imagem(base64_img):
     response = openai.ChatCompletion.create(
