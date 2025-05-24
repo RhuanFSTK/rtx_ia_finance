@@ -1,36 +1,53 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
-from gpt_handler import analisar_imagem
-import base64
-import io
-from PIL import Image
+import logging
+from fastapi import APIRouter, Form, HTTPException
+from gpt_handler import classificar_texto
+from mysql_conn import get_connection
 
 router = APIRouter()
 
-MAX_FILE_SIZE_MB = 5
+# Cria um logger específico para este módulo
+logger = logging.getLogger("registro_gastos")
+if not logger.hasHandlers():
+    # Configura o logger somente se ainda não estiver configurado
+    handler = logging.FileHandler("registro_gastos.log", encoding="utf-8")
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
 
 @router.post("/")
-async def analisar(file: UploadFile = File(...)):
+def registrar_gasto(descricao: str = Form(...)):
     try:
-        file_content = await file.read()
+        logger.info(f"Recebido: {descricao}")
 
-        # Verificação de tamanho
-        if len(file_content) > MAX_FILE_SIZE_MB * 1024 * 1024:
-            raise HTTPException(status_code=413, detail="Imagem muito grande. Envie uma imagem de até 5MB.")
+        resultado = classificar_texto(descricao)
+        
+        desc = resultado.get("descricao", "Sem descrição").capitalize()
+        valor = float(resultado.get("valor", 0.0))
+        classificacao = resultado.get("classificacao", "Não classificado").capitalize()
 
-        # Verifica se é imagem válida
-        image = Image.open(io.BytesIO(file_content))
-        image.verify()
-    except Exception:
-        raise HTTPException(status_code=400, detail="Arquivo não é uma imagem válida.")
+        logger.info(f"Descrição: {desc}")
+        logger.info(f"Valor: {valor}")
+        logger.info(f"Classificação: {classificacao}")
 
-    # Detecta MIME type automaticamente
-    mime_type = file.content_type or "image/jpeg"
-    conteudo = base64.b64encode(file_content).decode('utf-8')
-    base64_img = f"data:{mime_type};base64,{conteudo}"
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO gastos (descricao, classificacao, valor) VALUES (%s, %s, %s)",
+                (desc, classificacao, valor)
+            )
+            conn.commit()
 
-    try:
-        resultado = analisar_imagem(base64_img)
+        logger.info("Gasto registrado com sucesso no banco.")
+
+        return {
+            "mensagem": "Gasto classificado e salvo com sucesso!",
+            "gpt": resultado,
+            "salvo": True
+        }
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao analisar a imagem: {str(e)}")
-
-    return {"resultado": resultado}
+        import traceback
+        error_trace = traceback.format_exc()
+        logger.error(f"ERRO AO REGISTRAR GASTO: {error_trace}")
+        raise HTTPException(status_code=500, detail=str(e))
