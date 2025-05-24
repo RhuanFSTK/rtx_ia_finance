@@ -22,6 +22,7 @@ async def transcrever(file: UploadFile = File(...)):
     try:
         # Realiza a transcrição do áudio
         texto = transcrever_audio(temp_file_path)
+        print(texto)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao transcrever o áudio: {str(e)}")
     finally:

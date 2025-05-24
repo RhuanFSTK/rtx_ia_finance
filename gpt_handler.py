@@ -52,7 +52,7 @@ def classificar_texto(texto: str) -> dict:
 
     try:
         resposta = openai.ChatCompletion.create(
-            model="gpt-4",  # ou gpt-3.5-turbo
+            model="gpt-3.5-turbo",  # ou gpt-4
             messages=[
                 {"role": "system", "content": "Você é um assistente financeiro que estrutura dados de gastos."},
                 {"role": "user", "content": prompt}
