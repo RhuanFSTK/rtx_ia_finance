@@ -1,11 +1,16 @@
+from pydantic import BaseModel
 from fastapi import APIRouter, Form, HTTPException
 from gpt_handler import classificar_texto
 from mysql_conn import get_connection
 
 router = APIRouter()
 
+class GastoInput(BaseModel):
+    descricao: str
+
 @router.post("/")
-def registrar_gasto(descricao: str = Form(...)):
+def registrar_gasto(payload: GastoInput):
+    descricao = payload.descricao
     try:
         print("Recebido:", descricao)
 
