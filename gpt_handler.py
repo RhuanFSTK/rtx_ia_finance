@@ -44,9 +44,9 @@ def classificar_texto(texto: str) -> dict:
 
                 Responda apenas com o JSON. Exemplo de resposta esperada:
                 {{
-                "descricao": "Almoço",
-                "valor": 50.0,
-                "classificacao": "Despesa pessoal ou profissional"
+                    "descricao": "Almoço",
+                    "valor": 50.0,
+                    "classificacao": "Despesa [classificação indentificada]"
                 }}
             """
 
@@ -80,7 +80,7 @@ def classificar_texto(texto: str) -> dict:
 
 def transcrever_audio(caminho):
     with open(caminho, "rb") as audio_file:
-        transcript = openai.Audio.transcribe(
+        transcript = openai.Audio.translate(
             model="whisper-1",
             file=audio_file
         )
