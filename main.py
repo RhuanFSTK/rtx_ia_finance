@@ -1,10 +1,13 @@
 import os
 from fastapi import FastAPI
-from endpoints import registro, transcricao, imagem, consulta
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from endpoints import registro, transcricao, imagem, consulta
 
 # Criação do aplicativo FastAPI
 app = FastAPI(title="Agente Financeiro com IA")
+
+app.mount("/logs", StaticFiles(directory="logs"), name="logs")
 
 # CORS com ambiente condicional
 origens = [
