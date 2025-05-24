@@ -53,6 +53,12 @@ async def transcrever(file: UploadFile = File(...)):
             conteudo = await file.read()
             temp_file.write(conteudo)
             temp_file_path = temp_file.name
+            
+            # Salvar uma cópia do áudio recebido para verificação manual
+            debug_audio_path = os.path.join(logs_dir, f"{safe_filename}{ext}")
+            with open(debug_audio_path, "wb") as f_debug:
+                f_debug.write(conteudo)
+            logger.info(f"Áudio salvo para debug: {debug_audio_path}")
 
         logger.debug(f"Arquivo temporário criado: {temp_file_path}")
         logger.debug(f"Tamanho do arquivo temporário: {len(conteudo)} bytes")
