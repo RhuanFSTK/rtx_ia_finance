@@ -82,7 +82,8 @@ def transcrever_audio(caminho):
     with open(caminho, "rb") as audio_file:
         transcript = openai.Audio.translate(
             model="whisper-1",
-            file=audio_file
+            file=audio_file,
+            language="pt"
         )
     return transcript["text"].strip()
 
