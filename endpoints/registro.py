@@ -41,7 +41,7 @@ def registrar_gasto(descricao: str = Form(...)):
 
         return {
             "mensagem": "Gasto classificado e salvo com sucesso!",
-            "gpt": resultado,
+            "Agente": resultado,
             "salvo": True
         }
 
