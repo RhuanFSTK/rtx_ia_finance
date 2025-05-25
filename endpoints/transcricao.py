@@ -89,30 +89,42 @@ async def transcrever(file: UploadFile = File(...)):
 
         resultado = classificar_texto(texto)
 
-        desc = resultado.get("descricao", "Sem descrição").capitalize()
+        desc = resultado.get("descricao", "").strip()
+        classificacao = resultado.get("classificacao", "").strip()
+        valor_raw = resultado.get("valor", "").strip()
+
+        logger.info(f"[{req_id}] Descrição recebida: {desc}")
+        logger.info(f"[{req_id}] Classificação recebida: {classificacao}")
+        logger.info(f"[{req_id}] Valor recebido: {valor_raw}")
+
+        # Verifica se os campos essenciais estão presentes
+        if not desc or not classificacao or not valor_raw:
+            logger.warning(f"[{req_id}] Um ou mais campos obrigatórios estão ausentes. Não será salvo no banco.")
+            return {
+                "mensagem": "Gasto classificado, mas não salvo por falta de dados essenciais.",
+                "response": resultado,
+                "salvo": False
+            }
+
         try:
-            valor = float(resultado.get("valor", 0.0))
+            valor = float(valor_raw)
         except ValueError:
-            logger.warning(f"[{req_id}] Valor inválido recebido, usando 0.0")
-            valor = 0.0
+            logger.warning(f"[{req_id}] Valor inválido. Não será salvo no banco.")
+            return {
+                "mensagem": "Gasto classificado, mas não salvo devido a valor inválido.",
+                "response": resultado,
+                "salvo": False
+            }
 
-        classificacao = resultado.get("classificacao", "Não classificado").capitalize()
-
-        logger.info(f"[{req_id}] Descrição: {desc}")
-        logger.info(f"[{req_id}] Valor: {valor}")
-        logger.info(f"[{req_id}] Classificação: {classificacao}")
+        # Capitaliza os campos
+        desc = desc.capitalize()
+        classificacao = classificacao.capitalize()
 
         fuso_brasilia = pytz.timezone("America/Sao_Paulo")
         data_hora_brasilia = datetime.now(fuso_brasilia).strftime("%Y-%m-%d %H:%M:%S")
 
         salvar_gasto_no_banco(desc, classificacao, valor, data_hora_brasilia)
-        logger.info(f"[{req_id}] Gasto salvo no banco.")
-
-        return {
-            "mensagem": "Gasto classificado e salvo com sucesso!",
-            "response": resultado,
-            "salvo": True
-        }
+        logger.info(f"[{req_id}] Gasto salvo no banco com sucesso.")
 
     except Exception as e:
         erro_str = traceback.format_exc()
