@@ -35,7 +35,7 @@ def fallback_parse(texto: str) -> dict:
 def classificar_texto(texto: str) -> dict:
     prompt = f"""
         Analise a seguinte descrição de um gasto e retorne um JSON com os seguintes campos:
-        - descricao: a palavra-chave principal do gasto e o local se indentificar
+        - descricao: a palavra-chave principal do gasto e informações complementares de lugar ou o que
         - valor: valor numérico encontrado
         - classificacao: tipo de gasto (ex: pessoal, profissional, alimentação e saude)
 
