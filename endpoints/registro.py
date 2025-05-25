@@ -34,11 +34,13 @@ def registrar_gasto(descricao: str = Form(...)):
         # Pega data e hora de Brasília
         fuso_brasilia = pytz.timezone("America/Sao_Paulo")
         data_hora_brasilia = datetime.now(fuso_brasilia).strftime("%Y-%m-%d %H:%M:%S")
+        
+        print(data_hora_brasilia)
 
         with get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO gastos (descricao, classificacao, valor, data_hora) VALUES (%s, %s, %s, %s)",
+                "INSERT INTO gastos (descricao, classificacao, valor, 'data_hora') VALUES (%s, %s, %s, %s)",
                 (desc, classificacao, valor, data_hora_brasilia)
             )
             conn.commit()
