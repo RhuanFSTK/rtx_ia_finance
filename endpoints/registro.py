@@ -35,8 +35,6 @@ def registrar_gasto(descricao: str = Form(...)):
         fuso_brasilia = pytz.timezone("America/Sao_Paulo")
         data_hora_brasilia = datetime.now(fuso_brasilia).strftime("%Y-%m-%d %H:%M:%S")
         
-        print(data_hora_brasilia)
-
         with get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
