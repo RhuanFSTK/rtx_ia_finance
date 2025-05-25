@@ -125,6 +125,12 @@ async def transcrever(file: UploadFile = File(...)):
 
         salvar_gasto_no_banco(desc, classificacao, valor, data_hora_brasilia)
         logger.info(f"[{req_id}] Gasto salvo no banco com sucesso.")
+        
+        return {
+            "mensagem": "Gasto classificado e salvo com sucesso!",
+            "response": resultado,
+            "salvo": True
+        }
 
     except Exception as e:
         erro_str = traceback.format_exc()
