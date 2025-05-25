@@ -40,7 +40,7 @@ def registrar_gasto(descricao: str = Form(...)):
         with get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO gastos (descricao, classificacao, valor, 'data_hora') VALUES (%s, %s, %s, %s)",
+                "INSERT INTO gastos (descricao, classificacao, valor, data_hora) VALUES (%s, %s, %s, %s)",
                 (desc, classificacao, valor, data_hora_brasilia)
             )
             conn.commit()
