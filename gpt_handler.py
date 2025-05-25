@@ -93,7 +93,6 @@ def transcrever_audio(caminho: str) -> str:
         print(f"[ERRO] Falha ao transcrever áudio: {e}")
         return ""
 
-
 def analisar_imagem(base64_img):
     response = openai.ChatCompletion.create(
         model="gpt-4-vision-preview",

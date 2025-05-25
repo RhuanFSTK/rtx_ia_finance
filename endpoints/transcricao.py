@@ -91,7 +91,7 @@ async def transcrever(file: UploadFile = File(...)):
 
         desc = resultado.get("descricao", "").strip()
         classificacao = resultado.get("classificacao", "").strip()
-        valor_raw = resultado.get("valor", "").strip()
+        valor_raw = str(resultado.get("valor", "")).strip()
 
         logger.info(f"[{req_id}] Descrição recebida: {desc}")
         logger.info(f"[{req_id}] Classificação recebida: {classificacao}")
