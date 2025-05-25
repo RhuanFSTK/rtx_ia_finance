@@ -75,6 +75,7 @@ async def transcrever(file: UploadFile = File(...)):
             temp_file_path = temp_file.name
 
         debug_audio_path = os.path.join(logs_dir, f"{safe_filename}{ext}")
+        
         with open(debug_audio_path, "wb") as f_debug:
             f_debug.write(conteudo)
 
@@ -96,11 +97,30 @@ async def transcrever(file: UploadFile = File(...)):
         logger.info(f"[{req_id}] Descrição recebida: {desc}")
         logger.info(f"[{req_id}] Classificação recebida: {classificacao}")
         logger.info(f"[{req_id}] Valor recebido: {valor_raw}")
+        
+        # Validações
+        # Regras: valor deve ser válido e diferente de zero, classificação obrigatória, descrição abrigatoria
+        
+        if not desc:
+            logger.warning(f"[{req_id}] Descrição vazia. Não será salvo no banco.")
+            return {
+                "mensagem": "Gasto classificado, mas não salvo porque a descrição está vazia.",
+                "response": resultado,
+                "salvo": False
+            }
+            
+            
+        if not classificacao:
+            logger.warning(f"[{req_id}] Classificação vazia. Não será salvo no banco.")
+            return {
+                "mensagem": "Gasto classificado, mas não salvo porque a classificação está vazia.",
+                "response": resultado,
+                "salvo": False
+            }
 
-        # Regras: valor deve ser válido e diferente de zero, e classificação obrigatória
         try:
             valor = float(valor_raw)
-            if valor == 0.0:
+            if valor <= 0.0:
                 logger.warning(f"[{req_id}] Valor é zero. Não será salvo no banco.")
                 return {
                     "mensagem": "Gasto classificado, mas não salvo porque o valor é zero.",
@@ -111,14 +131,6 @@ async def transcrever(file: UploadFile = File(...)):
             logger.warning(f"[{req_id}] Valor inválido. Não será salvo no banco.")
             return {
                 "mensagem": "Gasto classificado, mas não salvo devido a valor inválido.",
-                "response": resultado,
-                "salvo": False
-            }
-
-        if not classificacao:
-            logger.warning(f"[{req_id}] Classificação ausente. Não será salvo no banco.")
-            return {
-                "mensagem": "Gasto classificado, mas não salvo por falta de classificação.",
                 "response": resultado,
                 "salvo": False
             }

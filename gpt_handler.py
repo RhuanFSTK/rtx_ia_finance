@@ -43,6 +43,10 @@ def classificar_texto(texto: str) -> dict:
         "{texto}"
 
         Responda apenas com o JSON. Exemplo de resposta esperada:
+        Se não houver valor, retorne: vazio
+        Se não houver descrição, retorne: vazio
+        Se não houver classificação, retorne: vazio
+        
         {{
             "descricao": "Almoço",
             "valor": 50.0,
