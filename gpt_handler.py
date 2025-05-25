@@ -37,7 +37,7 @@ def classificar_texto(texto: str) -> dict:
                 Analise a seguinte descrição de um gasto e retorne um JSON com os seguintes campos:
                 - descricao: a palavra-chave principal do gasto
                 - valor: valor numérico encontrado
-                - classificacao: tipo de gasto (ex: despesa pessoal, despesa profissional etc)
+                - classificacao: tipo de gasto (ex: despesa pessoal, despesa profissional, despesa alimentação, despesa veiicular etc)
 
                 Entrada:
                 "{texto}"
