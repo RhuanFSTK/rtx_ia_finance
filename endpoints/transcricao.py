@@ -97,21 +97,28 @@ async def transcrever(file: UploadFile = File(...)):
         logger.info(f"[{req_id}] Classificação recebida: {classificacao}")
         logger.info(f"[{req_id}] Valor recebido: {valor_raw}")
 
-        # Verifica se os campos essenciais estão presentes
-        if not desc or not classificacao or not valor_raw:
-            logger.warning(f"[{req_id}] Um ou mais campos obrigatórios estão ausentes. Não será salvo no banco.")
-            return {
-                "mensagem": "Gasto classificado, mas não salvo por falta de dados essenciais.",
-                "response": resultado,
-                "salvo": False
-            }
-
+        # Regras: valor deve ser válido e diferente de zero, e classificação obrigatória
         try:
             valor = float(valor_raw)
+            if valor == 0.0:
+                logger.warning(f"[{req_id}] Valor é zero. Não será salvo no banco.")
+                return {
+                    "mensagem": "Gasto classificado, mas não salvo porque o valor é zero.",
+                    "response": resultado,
+                    "salvo": False
+                }
         except ValueError:
             logger.warning(f"[{req_id}] Valor inválido. Não será salvo no banco.")
             return {
                 "mensagem": "Gasto classificado, mas não salvo devido a valor inválido.",
+                "response": resultado,
+                "salvo": False
+            }
+
+        if not classificacao:
+            logger.warning(f"[{req_id}] Classificação ausente. Não será salvo no banco.")
+            return {
+                "mensagem": "Gasto classificado, mas não salvo por falta de classificação.",
                 "response": resultado,
                 "salvo": False
             }
