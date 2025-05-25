@@ -2,13 +2,15 @@ import logging
 from fastapi import APIRouter, Form, HTTPException
 from gpt_handler import classificar_texto
 from mysql_conn import get_connection
+from datetime import datetime
+import pytz  # <- Import necessário para timezone
 
 router = APIRouter()
 
 # Configuração básica do logger
 logging.basicConfig(
-    filename='registro_gastos.log',  # arquivo para salvar logs
-    level=logging.INFO,              # nível mínimo para registrar
+    filename='registro_gastos.log',
+    level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
@@ -29,11 +31,15 @@ def registrar_gasto(descricao: str = Form(...)):
         logger.info(f"Valor: {valor}")
         logger.info(f"Classificação: {classificacao}")
 
+        # Pega data e hora de Brasília
+        fuso_brasilia = pytz.timezone("America/Sao_Paulo")
+        data_hora_brasilia = datetime.now(fuso_brasilia).strftime("%Y-%m-%d %H:%M:%S")
+
         with get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO gastos (descricao, classificacao, valor) VALUES (%s, %s, %s)",
-                (desc, classificacao, valor)
+                "INSERT INTO gastos (descricao, classificacao, valor, data_hora) VALUES (%s, %s, %s, %s)",
+                (desc, classificacao, valor, data_hora_brasilia)
             )
             conn.commit()
 
