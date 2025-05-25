@@ -34,21 +34,21 @@ def fallback_parse(texto: str) -> dict:
 
 def classificar_texto(texto: str) -> dict:
     prompt = f"""
-                Analise a seguinte descrição de um gasto e retorne um JSON com os seguintes campos:
-                - descricao: a palavra-chave principal do gasto
-                - valor: valor numérico encontrado
-                - classificacao: tipo de gasto (ex: despesa pessoal, despesa profissional, despesa alimentação, despesa veiicular etc)
+        Analise a seguinte descrição de um gasto e retorne um JSON com os seguintes campos:
+        - descricao: a palavra-chave principal do gasto e local
+        - valor: valor numérico encontrado
+        - classificacao: tipo de gasto (ex: pessoal, profissional, alimentação)
 
-                Entrada:
-                "{texto}"
+        Entrada:
+        "{texto}"
 
-                Responda apenas com o JSON. Exemplo de resposta esperada:
-                {{
-                    "descricao": "Almoço",
-                    "valor": 50.0,
-                    "classificacao": "Despesa [classificação indentificada]"
-                }}
-            """
+        Responda apenas com o JSON. Exemplo de resposta esperada:
+        {{
+            "descricao": "Almoço",
+            "valor": 50.0,
+            "classificacao": "Despesa [classificação indentificada]"
+        }}
+    """
 
     try:
         resposta = openai.ChatCompletion.create(
