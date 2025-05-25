@@ -78,14 +78,20 @@ def classificar_texto(texto: str) -> dict:
         return fallback_parse(texto)
 
 
-def transcrever_audio(caminho):
-    with open(caminho, "rb") as audio_file:
-        transcript = openai.Audio.translate(
-            model="whisper-1",
-            file=audio_file,
-            # language="pt"
-        )
-    return transcript["text"].strip()
+def transcrever_audio(caminho: str) -> str:
+    try:
+        with open(caminho, "rb") as audio_file:
+            resposta = openai.Audio.transcribe(
+                model="whisper-1",
+                file=audio_file,
+                language="pt",  # força português BR
+                temperature=0.0  # consistente e preciso
+            )
+        return resposta["text"].strip()
+
+    except Exception as e:
+        print(f"[ERRO] Falha ao transcrever áudio: {e}")
+        return ""
 
 
 def analisar_imagem(base64_img):
