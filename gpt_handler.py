@@ -37,7 +37,7 @@ def agent_master(texto: str) -> dict:
         Analise a seguinte descrição de um gasto e retorne um JSON com os seguintes campos:
         - descricao: a palavra-chave principal do gasto e informações complementares de lugar ou o
         - valor: valor numérico encontrado
-        - classificacao: tipo de gasto (ex: pessoal, profissional, alimentação e saude)
+        - classificacao: classificar dentro dessas cassificações somente (pessoal, profissional, alimentação, transporte, fixa e saúde)
 
         Entrada:
         "{texto}"
