@@ -1,6 +1,6 @@
 import logging
 from fastapi import APIRouter, Form, HTTPException
-from gpt_handler import classificar_texto
+from gpt_handler import agent_master
 from mysql_conn import get_connection
 from datetime import datetime
 import pytz  # <- Import necessário para timezone
@@ -21,7 +21,7 @@ def registrar_gasto(descricao: str = Form(...)):
     try:
         logger.info(f"Recebido: {descricao}")
 
-        resultado = classificar_texto(descricao)
+        resultado = agent_master(descricao)
         
         desc = resultado.get("descricao", "Sem descrição").capitalize()
         valor = float(resultado.get("valor", 0.0))
@@ -35,6 +35,43 @@ def registrar_gasto(descricao: str = Form(...)):
         fuso_brasilia = pytz.timezone("America/Sao_Paulo")
         data_hora_brasilia = datetime.now(fuso_brasilia).strftime("%Y-%m-%d %H:%M:%S")
         
+        # Validações
+        # Regras: valor deve ser válido e diferente de zero, classificação obrigatória, descrição abrigatoria
+        
+        if not desc:
+            logger.warning("Descrição vazia. Não será salvo no banco.")
+            return {
+                "mensagem": "Gasto classificado, mas não salvo porque a descrição está vazia.",
+                "response": resultado,
+                "salvo": False
+            }
+            
+            
+        if not classificacao:
+            logger.warning("Classificação vazia. Não será salvo no banco.")
+            return {
+                "mensagem": "Gasto classificado, mas não salvo porque a classificação está vazia.",
+                "response": resultado,
+                "salvo": False
+            }
+
+        try:
+            if valor <= 0.0:
+                logger.warning(f"Valor é zero. Não será salvo no banco.")
+                return {
+                    "mensagem": "Gasto classificado, mas não salvo porque o valor é zero.",
+                    "response": resultado,
+                    "salvo": False
+                }
+                
+        except ValueError:
+            logger.warning("Valor inválido. Não será salvo no banco.")
+            return {
+                "mensagem": "Gasto classificado, mas não salvo devido a valor inválido.",
+                "response": resultado,
+                "salvo": False
+            }
+        
         with get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -47,7 +84,7 @@ def registrar_gasto(descricao: str = Form(...)):
 
         return {
             "mensagem": "Gasto classificado e salvo com sucesso!",
-            "Agente": resultado,
+            "response": resultado,
             "salvo": True
         }
 

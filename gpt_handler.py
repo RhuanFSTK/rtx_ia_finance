@@ -32,23 +32,27 @@ def fallback_parse(texto: str) -> dict:
         "classificacao": "Não classificado"
     }
 
-def classificar_texto(texto: str) -> dict:
+def agent_master(texto: str) -> dict:
     prompt = f"""
-                Analise a seguinte descrição de um gasto e retorne um JSON com os seguintes campos:
-                - descricao: a palavra-chave principal do gasto
-                - valor: valor numérico encontrado
-                - classificacao: tipo de gasto (ex: despesa pessoal, despesa profissional etc)
+        Analise a seguinte descrição de um gasto e retorne um JSON com os seguintes campos:
+        - descricao: a palavra-chave principal do gasto e informações complementares de lugar ou o
+        - valor: valor numérico encontrado
+        - classificacao: tipo de gasto (ex: pessoal, profissional, alimentação e saude)
 
-                Entrada:
-                "{texto}"
+        Entrada:
+        "{texto}"
 
-                Responda apenas com o JSON. Exemplo de resposta esperada:
-                {{
-                    "descricao": "Almoço",
-                    "valor": 50.0,
-                    "classificacao": "Despesa [classificação indentificada]"
-                }}
-            """
+        Responda apenas com o JSON. Exemplo de resposta esperada:
+        Se não houver valor, retorne: vazio
+        Se não houver descrição, retorne: vazio
+        Se não houver classificação, retorne: vazio
+        
+        {{
+            "descricao": "Almoço",
+            "valor": 50.0,
+            "classificacao": "Despesa [classificação indentificada]"
+        }}
+    """
 
     try:
         resposta = openai.ChatCompletion.create(
@@ -78,16 +82,22 @@ def classificar_texto(texto: str) -> dict:
         return fallback_parse(texto)
 
 
-def transcrever_audio(caminho):
-    with open(caminho, "rb") as audio_file:
-        transcript = openai.Audio.translate(
-            model="whisper-1",
-            file=audio_file
-        )
-    return transcript["text"].strip()
+def agent_audio(caminho: str) -> str:
+    try:
+        with open(caminho, "rb") as audio_file:
+            resposta = openai.Audio.transcribe(
+                model="whisper-1",
+                file=audio_file,
+                language="pt",  # força português BR
+                temperature=0.0  # consistente e preciso
+            )
+        return resposta["text"].strip()
 
+    except Exception as e:
+        print(f"[ERRO] Falha ao transcrever áudio: {e}")
+        return ""
 
-def analisar_imagem(base64_img):
+def agent_img(base64_img):
     response = openai.ChatCompletion.create(
         model="gpt-4-vision-preview",
         messages=[
