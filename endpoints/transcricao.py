@@ -4,7 +4,7 @@ import uuid
 import tempfile
 import logging
 import traceback
-from gpt_handler import transcrever_audio, classificar_texto
+from gpt_handler import agent_audio, agent_master
 from mysql_conn import get_connection
 from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, HTTPException
@@ -84,11 +84,11 @@ async def transcrever(file: UploadFile = File(...)):
         logger.debug(f"[{req_id}] Tamanho do arquivo: {len(conteudo)} bytes")
 
         logger.info(f"[{req_id}] Iniciando transcrição...")
-        texto = transcrever_audio(temp_file_path)
+        texto = agent_audio(temp_file_path)
         logger.info(f"[{req_id}] Transcrição concluída.")
         logger.debug(f"[{req_id}] Texto: {texto}")
 
-        resultado = classificar_texto(texto)
+        resultado = agent_master(texto)
 
         desc = resultado.get("descricao", "").strip()
         classificacao = resultado.get("classificacao", "").strip()

@@ -32,10 +32,10 @@ def fallback_parse(texto: str) -> dict:
         "classificacao": "Não classificado"
     }
 
-def classificar_texto(texto: str) -> dict:
+def agent_master(texto: str) -> dict:
     prompt = f"""
         Analise a seguinte descrição de um gasto e retorne um JSON com os seguintes campos:
-        - descricao: a palavra-chave principal do gasto e informações complementares de lugar ou o que
+        - descricao: a palavra-chave principal do gasto e informações complementares de lugar ou o
         - valor: valor numérico encontrado
         - classificacao: tipo de gasto (ex: pessoal, profissional, alimentação e saude)
 
@@ -82,7 +82,7 @@ def classificar_texto(texto: str) -> dict:
         return fallback_parse(texto)
 
 
-def transcrever_audio(caminho: str) -> str:
+def agent_audio(caminho: str) -> str:
     try:
         with open(caminho, "rb") as audio_file:
             resposta = openai.Audio.transcribe(
@@ -97,7 +97,7 @@ def transcrever_audio(caminho: str) -> str:
         print(f"[ERRO] Falha ao transcrever áudio: {e}")
         return ""
 
-def analisar_imagem(base64_img):
+def agent_img(base64_img):
     response = openai.ChatCompletion.create(
         model="gpt-4-vision-preview",
         messages=[

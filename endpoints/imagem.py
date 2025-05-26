@@ -1,6 +1,6 @@
 import logging
 from fastapi import APIRouter, Form, HTTPException
-from gpt_handler import classificar_texto
+from gpt_handler import agent_master
 from mysql_conn import get_connection
 
 router = APIRouter()
@@ -20,7 +20,7 @@ def registrar_gasto(descricao: str = Form(...)):
     try:
         logger.info(f"Recebido: {descricao}")
 
-        resultado = classificar_texto(descricao)
+        resultado = agent_master(descricao)
         
         desc = resultado.get("descricao", "Sem descrição").capitalize()
         valor = float(resultado.get("valor", 0.0))
