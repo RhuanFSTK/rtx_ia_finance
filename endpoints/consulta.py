@@ -32,6 +32,7 @@ def consultar_gastos(
 
             if data_inicio and data_fim:
                 logger.info("📅 Validação das datas informadas...")
+                return {data_inicio} + ' - ' + {data_fim}
                 try:
                     inicio = datetime.fromisoformat(data_inicio)
                     fim = datetime.fromisoformat(data_fim)
