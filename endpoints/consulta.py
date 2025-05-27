@@ -56,6 +56,7 @@ def consultar_gastos(
                     SELECT descricao, classificacao, valor, data_hora 
                     FROM gastos 
                     ORDER BY data_hora DESC
+                    LIMIT 100 OFFSET 0
                 """
                 logger.info("📄 Executando SQL sem filtro de data...")
                 logger.info(f"📝 SQL: {sql.strip()}")
