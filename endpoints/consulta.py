@@ -30,7 +30,9 @@ def consultar_gastos(
             logger.info("✅ Conexão com o banco estabelecida.")
             cursor = conn.cursor(dictionary=True)
 
-            return {data_inicio} + ' - ' + {data_fim}
+            return data_inicio + " - " + data_fim
+
+        
             if data_inicio and data_fim:
                 logger.info("📅 Validação das datas informadas...")
                 try:
