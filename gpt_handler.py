@@ -35,7 +35,7 @@ def fallback_parse(texto: str) -> dict:
 def agent_master(texto: str) -> dict:
     prompt = f"""
         Analise a seguinte descrição de um gasto e retorne um JSON com os seguintes campos:
-        - descricao: a palavra-chave principal do gasto e informações complementares de lugar ou o
+        - descricao: a palavra-chave principal do gasto e informações complementares de lugar
         - valor: valor numérico encontrado
         - classificacao: classificar dentro dessas cassificações somente (pessoal, profissional, alimentação, transporte, fixa e saúde)
 
