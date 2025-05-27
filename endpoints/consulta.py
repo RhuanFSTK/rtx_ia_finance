@@ -52,12 +52,13 @@ def consultar_gastos(
                 cursor.execute(sql, (data_inicio, data_fim))
 
             else:
-                sql = """
-                    SELECT descricao, classificacao, valor, data_hora 
-                    FROM gastos 
-                    ORDER BY data_hora DESC
-                    LIMIT 100 OFFSET 0
-                """
+                sql = f"""
+                        SELECT descricao, classificacao, valor, data_hora 
+                        FROM gastos 
+                        WHERE data_hora BETWEEN '{data_inicio}' AND '{data_fim}'
+                        ORDER BY data_hora DESC
+                        LIMIT 100 OFFSET 0
+                    """
                 logger.info("📄 Executando SQL sem filtro de data...")
                 logger.info(f"📝 SQL: {sql.strip()}")
                 cursor.execute(sql)
