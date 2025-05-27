@@ -3,13 +3,15 @@ from fastapi import APIRouter, Query, HTTPException
 from mysql_conn import get_connection
 from datetime import datetime
 from typing import Optional
+import sys  # Adicionado para log no console
 
 router = APIRouter()
 
-# Configuração do logger detalhado
+
 logger = logging.getLogger("consulta_gastos")
+
 if not logger.hasHandlers():
-    handler = logging.FileHandler("consulta_gastos.log", encoding="utf-8")
+    handler = logging.StreamHandler(sys.stdout)  # 🔁 Manda tudo pro terminal/log do Uvicorn
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
