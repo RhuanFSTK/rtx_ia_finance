@@ -39,6 +39,7 @@ def consultar_gastos(
             try:
                 inicio = datetime.fromisoformat(data_inicio.strip())
                 fim = datetime.fromisoformat(data_fim.strip())
+                fim = fim.replace(hour=23, minute=59, second=59, microsecond=999999)
                 logger.info("✅ Datas validadas com sucesso.")
             except ValueError:
                 logger.error("❌ Formato de data inválido. Esperado: AAAA-MM-DD")
