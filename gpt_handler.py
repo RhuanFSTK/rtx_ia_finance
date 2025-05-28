@@ -34,25 +34,37 @@ def fallback_parse(texto: str) -> dict:
 
 def agent_master(texto: str) -> dict:
     prompt = f"""
-        Analise a seguinte descrição de um gasto e retorne um JSON com os seguintes campos:
-        - descricao: a palavra-chave principal do gasto e informações complementares de lugar
-        - valor: valor numérico encontrado
-        - classificacao: classificar dentro dessas cassificações somente (pessoal, profissional, alimentação, transporte, fixa e saúde)
+                Você é um assistente inteligente de classificação de despesas. Sua missão é analisar a descrição de um gasto e retornar um JSON estruturado contendo:
 
-        Entrada:
-        "{texto}"
+                - **descricao**: palavra-chave principal do gasto + informações relevantes como local ou serviço
+                - **valor**: número extraído da frase que represente o valor financeiro (em reais). Se não houver valor claro, retorne vazio
+                - **classificacao**: escolha **apenas uma** das seguintes categorias:
+                - pessoal
+                - profissional
+                - alimentação
+                - transporte
+                - fixa (relacionado a moradia: aluguel, luz, água, internet etc.)
+                - saúde
+                - outros
 
-        Responda apenas com o JSON. Exemplo de resposta esperada:
-        Se não houver valor, retorne: vazio
-        Se não houver descrição, retorne: vazio
-        Se não houver classificação, retorne: vazio
-        
-        {{
-            "descricao": "Almoço",
-            "valor": 50.0,
-            "classificacao": "Despesa [classificação indentificada]"
-        }}
-    """
+                ### Contexto profissional do usuário:
+                Profissão: Técnico em Refrigeração. Gastos com **gás**, **peças técnicas**, **manutenção de equipamentos**, entre outros relacionados a serviços de refrigeração, devem ser classificados como **profissional**.
+
+                ### Instruções adicionais:
+                - Classifique corretamente com base no **uso ou finalidade do gasto**, e não apenas na palavra usada.
+                - Retorne **apenas o JSON**, sem comentários ou explicações adicionais.
+                - Se não for possível identificar com clareza o valor, a descrição ou a classificação, retorne a string "vazio" no respectivo campo.
+
+                ### Entrada:
+                "{texto}"
+
+                ### Retorno esperado:
+                {{
+                "descricao": "Almoço no restaurante da esquina",
+                "valor": 38.50,
+                "classificacao": "alimentação"
+                }}
+            """
 
     try:
         resposta = openai.ChatCompletion.create(

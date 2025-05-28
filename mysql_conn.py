@@ -25,11 +25,6 @@ def get_connection():
         password = os.getenv("SUA_SENHA", "")
         database = os.getenv("SEU_BANCO", "meu_banco_local")
         
-        logger.info(host)
-        logger.info(user)
-        logger.info(password)
-        logger.info(database)
-        
         # Conecta ao banco
         connection = mysql.connector.connect(
             host=host,
@@ -39,16 +34,16 @@ def get_connection():
         )
         
         if connection.is_connected():
-            print(f"✅ Conexão com o banco de dados '{database}' estabelecida com sucesso.")
+            logger.info("✅ Conexão com o banco de dados '{database}' estabelecida com sucesso.")
             return connection
 
     except Error as e:
-        print(f"❌ Erro ao conectar ao MySQL: {e}")
+        logger.info("❌ Erro ao conectar ao MySQL: {e}")
         if 'connection' in locals() and connection.is_connected():
             connection.close()
         return None
     except Exception as ex:
-        print(f"❗ Erro desconhecido: {ex}")
+        logger.info("❗ Erro desconhecido: {ex}")
         return None
 
 # Teste local
