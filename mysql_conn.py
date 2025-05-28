@@ -14,6 +14,11 @@ def get_connection():
         password = os.getenv("SUA_SENHA", "")
         database = os.getenv("SEU_BANCO", "meu_banco_local")
         
+        print(host)
+        print(user)
+        print(password)
+        print(database)
+        
         # Conecta ao banco
         connection = mysql.connector.connect(
             host=host,
