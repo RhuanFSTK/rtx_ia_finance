@@ -2,9 +2,20 @@ from dotenv import load_dotenv
 import os
 import mysql.connector
 from mysql.connector import Error
+import logging
+import sys
 
 # Carrega variáveis do arquivo .env
 load_dotenv()
+
+# Logger para terminal (Uvicorn)
+logger = logging.getLogger("consulta_gastos")
+if not logger.hasHandlers():
+    handler = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
 
 def get_connection():
     try:
@@ -14,10 +25,10 @@ def get_connection():
         password = os.getenv("SUA_SENHA", "")
         database = os.getenv("SEU_BANCO", "meu_banco_local")
         
-        print(host)
-        print(user)
-        print(password)
-        print(database)
+        logger.info(host)
+        logger.info(user)
+        logger.info(password)
+        logger.info(database)
         
         # Conecta ao banco
         connection = mysql.connector.connect(
