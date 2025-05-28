@@ -3,13 +3,14 @@ from fastapi import APIRouter, Query, HTTPException
 from mysql_conn import get_connection
 from datetime import datetime
 from typing import Optional
+import sys
 
 router = APIRouter()
 
-# Configuração do logger detalhado
+# Logger para terminal (Uvicorn)
 logger = logging.getLogger("consulta_gastos")
 if not logger.hasHandlers():
-    handler = logging.FileHandler("consulta_gastos.log", encoding="utf-8")
+    handler = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
@@ -30,41 +31,35 @@ def consultar_gastos(
             logger.info("✅ Conexão com o banco estabelecida.")
             cursor = conn.cursor(dictionary=True)
 
-            if data_inicio and data_fim:
-                logger.info("📅 Validação das datas informadas...")
-                try:
-                    inicio = datetime.fromisoformat(data_inicio)
-                    fim = datetime.fromisoformat(data_fim)
-                    logger.info("✅ Datas validadas com sucesso.")
-                except ValueError:
-                    logger.error("❌ Formato de data inválido. Esperado: AAAA-MM-DD")
-                    raise HTTPException(status_code=400, detail="Datas devem estar no formato ISO: AAAA-MM-DD")
+            if not data_inicio or not data_fim:
+                logger.error("❌ Parâmetros de data ausentes.")
+                raise HTTPException(status_code=400, detail="Os parâmetros 'data_inicio' e 'data_fim' são obrigatórios.")
 
-                sql = """
-                    SELECT descricao, classificacao, valor, data_hora 
-                    FROM gastos 
-                    WHERE data_hora BETWEEN %s AND %s
-                    ORDER BY data_hora DESC
-                """
-                logger.info("📄 Executando SQL filtrado por data...")
-                logger.info(f"📝 SQL: {sql.strip()}")
-                logger.info(f"📌 Parâmetros: ({data_inicio}, {data_fim})")
-                cursor.execute(sql, (data_inicio, data_fim))
+            # Validação das datas
+            try:
+                inicio = datetime.fromisoformat(data_inicio.strip())
+                fim = datetime.fromisoformat(data_fim.strip())
+                logger.info("✅ Datas validadas com sucesso.")
+            except ValueError:
+                logger.error("❌ Formato de data inválido. Esperado: AAAA-MM-DD")
+                raise HTTPException(status_code=400, detail="Datas devem estar no formato ISO: AAAA-MM-DD")
 
-            else:
-                sql = """
-                    SELECT descricao, classificacao, valor, data_hora 
-                    FROM gastos 
-                    ORDER BY data_hora DESC
-                """
-                logger.info("📄 Executando SQL sem filtro de data...")
-                logger.info(f"📝 SQL: {sql.strip()}")
-                cursor.execute(sql)
+            sql = """
+                SELECT descricao, classificacao, valor, data_hora 
+                FROM gastos 
+                WHERE data_hora BETWEEN %s AND %s
+                ORDER BY data_hora DESC
+                LIMIT 100 OFFSET 0
+            """
+            logger.info("📄 Executando SQL com filtro de data...")
+            logger.info(f"📝 SQL: {sql.strip()}")
+            logger.info(f"📌 Parâmetros: ({data_inicio}, {data_fim})")
+            cursor.execute(sql, (data_inicio, data_fim))
 
             gastos = cursor.fetchall()
             total = sum([float(g['valor']) for g in gastos if g['valor'] is not None])
 
-            logger.info(f"📊 Consulta finalizada com sucesso.")
+            logger.info("📊 Consulta finalizada com sucesso.")
             logger.info(f"📦 Total de registros encontrados: {len(gastos)}")
             logger.info(f"💰 Soma total dos valores: {total:.2f}")
             logger.info("✅ Enviando resposta para o cliente.")
