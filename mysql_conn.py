@@ -8,14 +8,11 @@ load_dotenv()
 
 def get_connection():
     try:
-        # Lê as variáveis de ambiente
-        host = os.getenv("SEU_HOST")
-        user = os.getenv("SEU_USUARIO")
-        password = os.getenv("SUA_SENHA")
-        database = os.getenv("SEU_BANCO")
-        
-        if not all([host, user, password, database]):
-            raise ValueError("Faltando variáveis de ambiente para conexão com o banco de dados.")
+        # Usa variáveis do .env ou fallback para valores locais
+        host = os.getenv("SEU_HOST", "localhost")
+        user = os.getenv("SEU_USUARIO", "root")
+        password = os.getenv("SUA_SENHA", "")
+        database = os.getenv("SEU_BANCO", "meu_banco_local")
         
         # Conecta ao banco
         connection = mysql.connector.connect(
@@ -33,9 +30,6 @@ def get_connection():
         print(f"❌ Erro ao conectar ao MySQL: {e}")
         if 'connection' in locals() and connection.is_connected():
             connection.close()
-        return None
-    except ValueError as ve:
-        print(f"⚠️ {ve}")
         return None
     except Exception as ex:
         print(f"❗ Erro desconhecido: {ex}")
