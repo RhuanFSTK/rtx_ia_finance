@@ -34,8 +34,6 @@ def consultar_gastos(
             if data_inicio and data_fim:
                 logger.info("📅 Validação das datas informadas...")
                 try:
-                    inicio = datetime.fromisoformat(data_inicio)
-                    fim = datetime.fromisoformat(data_fim)
                     logger.info("✅ Datas validadas com sucesso.")
                 except ValueError:
                     logger.error("❌ Formato de data inválido. Esperado: AAAA-MM-DD")
